@@ -192,7 +192,7 @@ class CrosswordCreator():
                 return False
                 #return "Case 3"
         
-        # Contains all arcs in the crossword
+        # Contains all arcs in the assignment
         arcs = []
         for var in assignment:
             for neighbour in [item for item in self.crossword.neighbors(var) if item in assignment]:
@@ -284,7 +284,23 @@ class CrosswordCreator():
 
         If no assignment is possible, return None.
         """
-        raise NotImplementedError
+        if self.assignment_complete(assignment):
+            return assignment
+        
+        var = self.select_unassigned_variable(assignment)
+
+        for value in self.domains[var]:
+            assignmentCopy = deepcopy(assignment)
+            assignmentCopy[var] = value
+            if self.consistent(assignmentCopy):
+                assignment[var] = value
+                result = self.backtrack(assignment)
+                if result != None:
+                    return result
+                assignment = deepcopy(assignmentCopy)
+                
+        return None
+
 
 
 def main():
