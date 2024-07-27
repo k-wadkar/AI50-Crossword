@@ -178,8 +178,41 @@ class CrosswordCreator():
         Return True if `assignment` is consistent (i.e., words fit in crossword
         puzzle without conflicting characters); return False otherwise.
         """
-        raise NotImplementedError
+        keys = [key for key in assignment]
+        # If duplicate word present...
+        for keyIndex in range(len(assignment)):
+            for nestedKeyIndex in range(keyIndex+1, len(assignment)):
+                if assignment[keys[keyIndex]] == assignment[keys[nestedKeyIndex]]:
+                    return False
+                    #return "Case 2"
 
+        # If word length incorrect for variable...
+        for variable in assignment:
+            if variable.length != len(assignment[variable]):
+                return False
+                #return "Case 3"
+        
+        # Contains all arcs in the crossword
+        arcs = []
+        for var in assignment:
+            for neighbour in [item for item in self.crossword.neighbors(var) if item in assignment]:
+                arcs.append((var, neighbour))
+        
+        # If any arc in assignment is inconsistent...
+        for arc in arcs:
+            x = arc[0]
+            y = arc[1]
+
+            xIntersectionIndex = self.crossword.overlaps[x, y][0]
+            yIntersectionIndex = self.crossword.overlaps[x, y][1]
+
+            if assignment[x][xIntersectionIndex] != assignment[y][yIntersectionIndex]:
+                return False
+                #return "Case 4"
+        
+        # Otherwise assignment is consistent
+        return True
+        
     def order_domain_values(self, var, assignment):
         """
         Return a list of values in the domain of `var`, in order by
@@ -187,7 +220,22 @@ class CrosswordCreator():
         The first value in the list, for example, should be the one
         that rules out the fewest values among the neighbors of `var`.
         """
-        raise NotImplementedError
+        domainOnChoices = {}
+
+        for domain in self.domains[var]:
+            choicesRuledOut = 0
+
+            for neighbour in [item for item in self.crossword.neighbors(var) if item not in assignment]:
+                for neighbourDomain in self.domains[neighbour]:
+                    varIntersectionIndex = self.crossword.overlaps[var, neighbour][0]
+                    neighbourIntersectionIndex = self.crossword.overlaps[var, neighbour][1]
+
+                    if domain[varIntersectionIndex] != neighbourDomain[neighbourIntersectionIndex]:
+                        choicesRuledOut += 1
+
+            domainOnChoices[domain] = choicesRuledOut
+        
+        return sorted(domainOnChoices, key=lambda k: domainOnChoices[k])
 
     def select_unassigned_variable(self, assignment):
         """
