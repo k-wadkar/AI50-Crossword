@@ -140,7 +140,25 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        raise NotImplementedError
+        if arcs==None:
+            arcs = []
+            for var in self.domains:
+                for neighbour in self.crossword.neighbors(var):
+                    arcs.append((var, neighbour))
+
+        
+        while len(arcs) != 0:
+            nextArc = arcs.pop(0)
+            
+            if self.revise(nextArc[0], nextArc[1]):
+                if len(self.domains[nextArc[0]]) == 0:
+                    return False
+                
+                # Iterates through a list containing all the neighbours of nextArc[0] except nextArc[1]
+                for neighbour in [item for item in self.crossword.neighbors(nextArc[0]) if item != nextArc[1]]:
+                    arcs.append((neighbour, nextArc[0]))
+
+        return True
 
     def assignment_complete(self, assignment):
         """
