@@ -124,7 +124,7 @@ class CrosswordCreator():
             if any(xWord[xIntersectionIndex] == yWord[yIntersectionIndex] for yWord in self.domains[y]):
                 newXDomain.add(xWord)
 
-        revisionMade = not(newXDomain == self.domains[x])
+        revisionMade = not (newXDomain == self.domains[x])
 
         if revisionMade:
             self.domains[x] = deepcopy(newXDomain)
@@ -140,12 +140,11 @@ class CrosswordCreator():
         Return True if arc consistency is enforced and no domains are empty;
         return False if one or more domains end up empty.
         """
-        if arcs==None:
+        if arcs == None:
             arcs = []
             for var in self.domains:
                 for neighbour in self.crossword.neighbors(var):
                     arcs.append((var, neighbour))
-
         
         while len(arcs) != 0:
             nextArc = arcs.pop(0)
@@ -184,13 +183,11 @@ class CrosswordCreator():
             for nestedKeyIndex in range(keyIndex+1, len(assignment)):
                 if assignment[keys[keyIndex]] == assignment[keys[nestedKeyIndex]]:
                     return False
-                    #return "Case 2"
 
         # If word length incorrect for variable...
         for variable in assignment:
             if variable.length != len(assignment[variable]):
                 return False
-                #return "Case 3"
         
         # Contains all arcs in the assignment
         arcs = []
@@ -208,7 +205,6 @@ class CrosswordCreator():
 
             if assignment[x][xIntersectionIndex] != assignment[y][yIntersectionIndex]:
                 return False
-                #return "Case 4"
         
         # Otherwise assignment is consistent
         return True
@@ -272,9 +268,6 @@ class CrosswordCreator():
 
         return [key for key in largestDegree][0]
 
-
-        raise NotImplementedError
-
     def backtrack(self, assignment):
         """
         Using Backtracking Search, take as input a partial assignment for the
@@ -300,7 +293,6 @@ class CrosswordCreator():
                 assignment = deepcopy(assignmentCopy)
                 
         return None
-
 
 
 def main():
