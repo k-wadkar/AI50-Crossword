@@ -1,5 +1,5 @@
 import sys
-
+from copy import deepcopy
 from crossword import *
 
 
@@ -99,7 +99,12 @@ class CrosswordCreator():
         (Remove any values that are inconsistent with a variable's unary
          constraints; in this case, the length of the word.)
         """
-        raise NotImplementedError
+        for var in self.domains:
+            newSet = set()
+            for word in self.domains[var]:
+                if len(word) == var.length:
+                    newSet.add(word)
+            self.domains[var] = newSet
 
     def revise(self, x, y):
         """
@@ -110,7 +115,21 @@ class CrosswordCreator():
         Return True if a revision was made to the domain of `x`; return
         False if no revision was made.
         """
-        raise NotImplementedError
+        xIntersectionIndex = self.crossword.overlaps[x, y][0]
+        yIntersectionIndex = self.crossword.overlaps[x, y][1]
+
+        newXDomain = set()
+
+        for xWord in self.domains[x]:
+            if any(xWord[xIntersectionIndex] == yWord[yIntersectionIndex] for yWord in self.domains[y]):
+                newXDomain.add(xWord)
+
+        revisionMade = not(newXDomain == self.domains[x])
+
+        if revisionMade:
+            self.domains[x] = deepcopy(newXDomain)
+
+        return revisionMade
 
     def ac3(self, arcs=None):
         """

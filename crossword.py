@@ -9,6 +9,7 @@ class Variable():
         self.j = j
         self.direction = direction
         self.length = length
+        # Contains the coordinates of every letter in the variable
         self.cells = []
         for k in range(self.length):
             self.cells.append(
