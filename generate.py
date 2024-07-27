@@ -245,6 +245,34 @@ class CrosswordCreator():
         degree. If there is a tie, any of the tied variables are acceptable
         return values.
         """
+        fewestRemainingDomains = {}
+
+        lowestDomainVal = float('inf')
+        for variable in [var for var in self.domains if var not in assignment]:
+            if len(self.domains[variable]) < lowestDomainVal:
+                lowestDomainVal = len(self.domains[variable])
+                fewestRemainingDomains.clear()
+                fewestRemainingDomains[variable] = lowestDomainVal
+            elif len(self.domains[variable]) == lowestDomainVal:
+                fewestRemainingDomains[variable] = lowestDomainVal
+
+        if len(fewestRemainingDomains) == 1:
+            return [key for key in fewestRemainingDomains][0]
+        
+        else:
+            largestDegree = {}
+            largestDegreeVal = 0
+            for variable in fewestRemainingDomains:
+                if len(self.crossword.neighbors(variable)) > largestDegreeVal:
+                    largestDegreeVal = len(self.crossword.neighbors(variable))
+                    largestDegree.clear()
+                    largestDegree[variable] = largestDegreeVal
+                elif len(self.crossword.neighbors(variable)) == largestDegreeVal:
+                    largestDegree[variable] = largestDegreeVal
+
+        return [key for key in largestDegree][0]
+
+
         raise NotImplementedError
 
     def backtrack(self, assignment):
